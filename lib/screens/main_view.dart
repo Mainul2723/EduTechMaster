@@ -1,3 +1,4 @@
+import 'package:edutechmaster/screens/dashboard.dart';
 import 'package:edutechmaster/screens/login.dart';
 import 'package:edutechmaster/screens/signup.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,8 +26,12 @@ class _MainViewState extends State<MainView> {
             return Login(
               controller: controller,
             );
-          } else {
-            return SignUpScreen(
+          } else if(index == 1){
+            return SignUpScreen(controller: controller,);
+          }
+
+          else if (index==2){
+            return DashBoard(
               controller: controller,
             );
           }

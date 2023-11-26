@@ -2,6 +2,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key, required this.controller});
@@ -16,7 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
   final TextEditingController _userName = TextEditingController();
-
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -170,12 +172,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       height: 56,
                       child: ElevatedButton(
                         onPressed: () {
-                          _registerUser();
+                          _isLoading ? null : _registerUser();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF9F7BFF),
+                          backgroundColor: _isLoading ? Colors.grey : const Color(0xFF9F7BFF),
                         ),
-                        child: const Text(
+                        child:  _isLoading ? LoadingAnimationWidget.fourRotatingDots(color: Colors.white,
+                          size: 50,) : const Text(
                           'Create account',
                           style: TextStyle(
                             color: Colors.white,
@@ -233,6 +236,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
   Future<void> _registerUser() async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
           email: _emailController.text, password: _passController.text);
