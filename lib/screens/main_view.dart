@@ -32,7 +32,8 @@ class _MainViewState extends State<MainView> {
 
           else if (index==2){
             return DashBoard(
-              controller: controller,
+              // controller: controller,
+              title: 'EduTechMaster', subText: '',
             );
           }
         },

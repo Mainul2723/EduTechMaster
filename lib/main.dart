@@ -1,3 +1,5 @@
+import 'package:edutechmaster/screens/coursePlayerPageScreen.dart';
+import 'package:edutechmaster/screens/dashboard.dart';
 import 'package:edutechmaster/screens/main_view.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,7 +33,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MainView(),
+      home:  const MainView(),
+      // home:  DashBoard( title: 'EduTechMaster'),
+
     );
   }
 }

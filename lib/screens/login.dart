@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,8 +13,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController(text: "Mainul.ifa@gmail.com");
+  final TextEditingController _passController = TextEditingController(text: "Mainul2");
   bool passwordVisible = false;
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
@@ -34,6 +36,8 @@ class _LoginState extends State<Login> {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(
               email: _emailController.text, password: _passController.text);
+      // email: _emailController.text, password: _passController.text);
+
       widget.controller.animateToPage(2,
           duration: const Duration(milliseconds: 500), curve: Curves.ease);
 
@@ -220,22 +224,7 @@ class _LoginState extends State<Login> {
                       const SizedBox(
                         width: 2.5,
                       ),
-                      // InkWell(
-                      //   onTap: () {
-                      //     widget.controller.animateToPage(1,
-                      //         duration: const Duration(milliseconds: 500),
-                      //         curve: Curves.ease);
-                      //   },
-                      //   child: const Text(
-                      //     'Sign Up',
-                      //     style: TextStyle(
-                      //       color: Color(0xFF755DC1),
-                      //       fontSize: 13,
-                      //       fontFamily: 'Poppins',
-                      //       fontWeight: FontWeight.w500,
-                      //     ),
-                      //   ),
-                      // ),
+
                     ],
                   ),
                   const SizedBox(
@@ -255,16 +244,16 @@ class _LoginState extends State<Login> {
 
                         showDialog(
                           context: context,
-                          builder: (BuildContext context) {
+                          builder: ( context) {
                             return AlertDialog(
-                              title: Text('Sorry'),
-                              content: Text('Failed to send reset password link. Please Input your email and try again.'),
+                              title: const Text('Sorry'),
+                              content: const Text('Failed to send reset password link. Please Input your email and try again.'),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pop(); // Close the dialog
                                   },
-                                  child: Text('OK'),
+                                  child: const Text('OK'),
                                 ),
                               ],
                             );
@@ -275,7 +264,7 @@ class _LoginState extends State<Login> {
                     child: Text(
                       'Forget Password?',
                       style: GoogleFonts.poppins(
-                        color: Color(0xFF755DC1),
+                        color: const Color(0xFF755DC1),
                         fontSize: 13,
 
                         fontWeight: FontWeight.w500,
