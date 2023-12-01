@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'NavScreen/bookmarked.dart';
 import 'coursePlayerPageScreen.dart';
 
@@ -13,17 +14,20 @@ class CardInfo {
 }
 
 class DashBoard extends StatefulWidget {
-  DashBoard({Key? key, required this.title, required this.subText});
+  DashBoard({Key? key, required this.name, required this.email, required this.imageUrl});
   String ht = '';
   String st = '';
-  final String title;
-  final String subText;
+  String title = 'EduTechMaster';
+  final String name;
+  final String email;
+  final String imageUrl;
 
   @override
   State<DashBoard> createState() => _DashBoardState();
 }
 
 class _DashBoardState extends State<DashBoard> {
+
   int _selectedIndex = 0;
   List<bool> bookmarked = [false, false, false, false, false];
   List<String> bookmarkedTitles = [];
@@ -37,6 +41,8 @@ class _DashBoardState extends State<DashBoard> {
       subTitle.removeAt(index);
     });
   }
+
+
 
   void _toggleBookmark(int index, String title, String subText) {
     setState(() {
@@ -66,20 +72,20 @@ class _DashBoardState extends State<DashBoard> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               FadeInRight(
-                duration: const Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 500),
                 child: _cards('JavaScript', 'Summit', 0),
               ),
               FadeInLeft(
-                  duration: const Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 500),
                   child: _cards('Java', 'Anisul Islam', 1)),
               FadeInRight(
-                  duration: const Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 500),
                   child: _cards('Dart', 'Rabbil Hasan', 2)),
               FadeInLeft(
-                  duration: const Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 500),
                   child: _cards('React JS', 'Summit', 3)),
               FadeInRight(
-                  duration: const Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 500),
                   child: _cards('C/C++', 'Anisul Islam', 4)),
             ],
           ),
@@ -89,12 +95,26 @@ class _DashBoardState extends State<DashBoard> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
+            // CONST DRAWERHEADER(
+            //   decoration: BoxDecoration(
+            //     color: Colors.blue,
+            //   ),
+            //   child: Text('Drawer Header'),
+            // ),
+            UserAccountsDrawerHeader(
+              accountName: Text(widget.name),
+              accountEmail: Text(widget.email),
+              currentAccountPicture: widget.imageUrl != null
+                  ? CircleAvatar(
+                backgroundImage: NetworkImage(widget.imageUrl),
+              )
+                  : const CircleAvatar(), // Placeholder if image URL is not available
+              decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text('Drawer Header'),
             ),
+
+
             ListTile(
               title: const Text('Home'),
               selected: _selectedIndex == 0,
@@ -202,4 +222,5 @@ class _DashBoardState extends State<DashBoard> {
       ),
     );
   }
+
 }

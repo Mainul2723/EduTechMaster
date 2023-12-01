@@ -1,24 +1,38 @@
-
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-
+import 'package:image_picker/image_picker.dart';
+import 'login.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key, required this.controller});
-  final PageController controller;
+  const SignUpScreen({super.key});
+
   @override
   // State<SignUpScreen> createState() => _SignUpScreenState();
   _SignUpScreenState createState() => _SignUpScreenState();
 }
-
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
   final TextEditingController _userName = TextEditingController();
   bool _isLoading = false;
+  File? _profileImage; // Declare _profileImage as a File
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +70,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   const SizedBox(
                     height: 15,
+                  ),
+                  Center(
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundColor: Colors.grey[200],
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : null,
+                      child: _profileImage == null
+                          ? IconButton(
+                              icon: const Icon(Icons.camera_alt),
+                              onPressed: _pickImage,
+                            )
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
                   ),
                   TextField(
                     controller: _emailController,
@@ -175,18 +207,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           _isLoading ? null : _registerUser();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _isLoading ? Colors.grey : const Color(0xFF9F7BFF),
+                          backgroundColor: _isLoading
+                              ? Colors.grey
+                              : const Color(0xFF9F7BFF),
                         ),
-                        child:  _isLoading ? LoadingAnimationWidget.fourRotatingDots(color: Colors.white,
-                          size: 50,) : const Text(
-                          'Create account',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? LoadingAnimationWidget.fourRotatingDots(
+                                color: Colors.white,
+                                size: 50,
+                              )
+                            : const Text(
+                                'Create account',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                       ),
                     ),
                   ),
@@ -210,9 +248,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       InkWell(
                         onTap: () {
-                          widget.controller.animateToPage(0,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.ease);
+                          Get.to(() =>  Login());
                         },
                         child: const Text(
                           'Log In ',
@@ -234,14 +270,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
+
   Future<void> _registerUser() async {
     try {
       setState(() {
         _isLoading = true;
       });
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-          email: _emailController.text, password: _passController.text);
+
+      String profileImageUrl = '';
+      if (_profileImage != null) {
+        final storageRef = FirebaseStorage.instance.ref().child('profile_images').child(_emailController.text);
+        final uploadTask = storageRef.putFile(_profileImage!);
+        await uploadTask.whenComplete(() async {
+          profileImageUrl = await storageRef.getDownloadURL();
+        });
+      }
+
+      // Create user in Firebase Authentication
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passController.text,
+      );
 
       // Get the UID of the newly created user
       String uid = userCredential.user!.uid;
@@ -250,18 +299,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'email': _emailController.text,
         'username': _userName.text,
+        'profileImageUrl': profileImageUrl,
         // Add other user information as needed
       });
 
-      // Move to another page or perform any other action after successful registration
-      widget.controller.animateToPage(
-        0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.ease,
-      );
+      // Navigate to login screen after successful registration
+      Get.to(() => const Login());
     } catch (error) {
       print("Error during signup: $error");
       // Handle the error appropriately (e.g., show a snackbar with the error message)
     }
   }
+
 }

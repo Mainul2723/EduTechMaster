@@ -1,41 +1,40 @@
+// main_view.dart
+
 import 'package:edutechmaster/screens/dashboard.dart';
 import 'package:edutechmaster/screens/login.dart';
 import 'package:edutechmaster/screens/signup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class MainView extends StatefulWidget {
-  const MainView({super.key});
+import '../controller/main_controller.dart';
 
-  @override
-  State<MainView> createState() => _MainViewState();
-}
-
-class _MainViewState extends State<MainView> {
-  PageController controller = PageController(initialPage: 0);
+class MainView extends StatelessWidget {
+  const MainView({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 3,
-        controller: controller,
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return Login(
-              controller: controller,
-            );
-          } else if(index == 1){
-            return SignUpScreen(controller: controller,);
-          }
+      body: Obx(
+            () {
+          final MainController mainController = Get.find();
+          return PageView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 3,
+            controller: PageController(initialPage: mainController.currentIndex.value),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Login();
+              } else if (index == 1) {
+                return SignUpScreen();
+              } else if (index == 2) {
+                return DashBoard(name: '', email: '', imageUrl: '',);
+              }
 
-          else if (index==2){
-            return DashBoard(
-              // controller: controller,
-              title: 'EduTechMaster', subText: '',
-            );
-          }
+              // Return an empty container by default
+              return Container();
+            },
+          );
         },
       ),
     );

@@ -1,13 +1,22 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:edutechmaster/screens/dashboard.dart';
+import 'package:edutechmaster/screens/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import '../controller/main_controller.dart';
+import 'main_view.dart';
+
 class Login extends StatefulWidget {
-  const Login({super.key, required this.controller});
-  final PageController controller;
+  const Login({super.key});
+
+
   @override
   State<Login> createState() => _LoginState();
 }
@@ -37,9 +46,14 @@ class _LoginState extends State<Login> {
           .signInWithEmailAndPassword(
               email: _emailController.text, password: _passController.text);
       // email: _emailController.text, password: _passController.text);
+      String uid = userCredential.user!.uid;
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
-      widget.controller.animateToPage(2,
-          duration: const Duration(milliseconds: 500), curve: Curves.ease);
+      // Access the user's name
+      String name = userDoc['username'];
+      String imageUrl = userDoc['profileImageUrl'].toString();
+
+      Get.off(() => DashBoard(name: name,email: _emailController.text,imageUrl: imageUrl,));
 
       print("Sign in successful!");
     } catch (error) {
@@ -49,6 +63,7 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final MainController mainController = Get.find();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -207,9 +222,7 @@ class _LoginState extends State<Login> {
                       InkWell(
                         onTap: () {
                           // Handle the button tap, e.g., navigate to the sign-up screen
-                          widget.controller.animateToPage(1,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.ease);
+                          Get.to(() => SignUpScreen());
                         },
                         child: Text(
                           'Don\'t have an account?',
