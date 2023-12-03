@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'NavScreen/bookmarked.dart';
 import 'coursePlayerPageScreen.dart';
+import 'login.dart';
 
 class CardInfo {
   final int index;
@@ -14,7 +15,7 @@ class CardInfo {
 }
 
 class DashBoard extends StatefulWidget {
-  DashBoard({Key? key, required this.name, required this.email, required this.imageUrl});
+  DashBoard({super.key, required this.name, required this.email, required this.imageUrl});
   String ht = '';
   String st = '';
   String title = 'EduTechMaster';
@@ -148,11 +149,19 @@ class _DashBoardState extends State<DashBoard> {
               },
             ),
             ListTile(
-              title: const Text('About Me'),
+              title:  Text('Log Out',),
               selected: _selectedIndex == 2,
               onTap: () {
                 _onUnmark(2);
                 Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Login(
+
+                    ),
+                  ),
+                );
               },
             ),
           ],
